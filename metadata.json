@@ -1,0 +1,6 @@
+{
+  "name": "Portfolio Interactivo 3D",
+  "description": "Un portfolio interactivo único con efectos 3D, partículas físicas e interfaces dinámicas para mostrar proyectos de desarrollo.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
