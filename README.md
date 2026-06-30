@@ -15,7 +15,3 @@
 - ⚡ Interfaz de usuario rápida y moderna
 - 📬 Sección de contacto
 - 🌐 Enlaces a GitHub y perfiles en redes sociales
-
----
-
-## 📸 Vista previa
