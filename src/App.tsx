@@ -17,7 +17,9 @@ import {
   X,
   Smartphone,
   CheckCircle,
-  FolderKanban
+  FolderKanban,
+  Sun,
+  Moon
 } from 'lucide-react';
 import { SpaceCanvas } from './components/SpaceCanvas';
 import { HoloCube } from './components/HoloCube';
@@ -31,9 +33,28 @@ export default function App() {
   const [activeSection, setActiveSection] = useState<string>('inicio');
   const [soundEnabled, setSoundEnabled] = useState<boolean>(true);
   const [mobileMenuOpen, setMobileMenuOpen] = useState<boolean>(false);
+  const [theme, setTheme] = useState<'dark' | 'light'>(() => {
+    const saved = localStorage.getItem('portfolio-theme');
+    return (saved as 'dark' | 'light') || 'dark';
+  });
   
   // España (Europe/Madrid) simulated ticking clock
   const [timeStr, setTimeStr] = useState<string>('');
+
+  useEffect(() => {
+    localStorage.setItem('portfolio-theme', theme);
+    const root = document.documentElement;
+    if (theme === 'light') {
+      root.classList.add('light');
+    } else {
+      root.classList.remove('light');
+    }
+  }, [theme]);
+
+  const toggleTheme = () => {
+    playClick();
+    setTheme(prev => prev === 'dark' ? 'light' : 'dark');
+  };
 
   useEffect(() => {
     const updateTime = () => {
@@ -53,6 +74,13 @@ export default function App() {
     const timer = setInterval(updateTime, 1000);
     return () => clearInterval(timer);
   }, []);
+
+  useEffect(() => {
+    const target = document.getElementById('main-content-display');
+    if (target) {
+      target.scrollTop = 0;
+    }
+  }, [activeSection]);
 
   const handleSectionChange = (section: string) => {
     setActiveSection(section);
@@ -84,7 +112,7 @@ export default function App() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#080808] text-[#F0F0F0] flex flex-col font-sans selection:bg-cyan-500/30 selection:text-cyan-200 relative overflow-x-hidden">
+    <div className="min-h-screen bg-theme-app text-theme-primary transition-colors duration-500 flex flex-col font-sans selection:bg-cyan-500/30 selection:text-cyan-200 relative overflow-x-hidden">
       
       {/* 3D Connecting Nodes canvas background */}
       <SpaceCanvas />
@@ -120,7 +148,7 @@ export default function App() {
                   className={`pb-1 transition-all cursor-pointer ${
                     isActive
                       ? 'border-b border-cyan-400 text-cyan-400'
-                      : 'text-slate-400 hover:text-white opacity-60 hover:opacity-100'
+                      : 'text-theme-secondary hover:text-theme-primary opacity-80 hover:opacity-100'
                   }`}
                 >
                   {item.label}
@@ -131,10 +159,19 @@ export default function App() {
 
           <div className="flex items-center gap-3 ml-auto sm:ml-0">
             {/* Realtime Local Clock (Spain time) */}
-            <div className="flex items-center space-x-1.5 px-3 py-1 bg-white/5 border border-white/10 rounded-full text-[9px] font-mono text-slate-400 select-none">
+            <div className="flex items-center space-x-1.5 px-3 py-1 bg-theme-card-alt border border-theme rounded-full text-[9px] font-mono text-theme-secondary select-none">
               <Clock size={10} className="text-cyan-400 animate-spin-slow" />
               <span>ALC: {timeStr || '00:00:00'}</span>
             </div>
+
+            {/* Theme Toggle button */}
+            <button
+              onClick={toggleTheme}
+              className="p-2 rounded-full border bg-theme-card-alt border-theme text-theme-secondary hover:text-theme-primary transition-all cursor-pointer"
+              title={theme === 'dark' ? "Activar modo claro" : "Activar modo oscuro"}
+            >
+              {theme === 'dark' ? <Sun size={13} /> : <Moon size={13} />}
+            </button>
 
             {/* Audio Toggle button */}
             <button
@@ -142,7 +179,7 @@ export default function App() {
               className={`p-2 rounded-full border transition-all cursor-pointer ${
                 soundEnabled
                   ? 'bg-cyan-500/10 border-cyan-500/20 text-cyan-400 hover:bg-cyan-500/20'
-                  : 'bg-white/5 border-white/10 text-slate-500 hover:text-slate-300'
+                  : 'bg-theme-card-alt border-theme text-theme-secondary hover:text-theme-primary'
               }`}
               title={soundEnabled ? "Silenciar" : "Activar sonido interactivo"}
             >
@@ -154,7 +191,7 @@ export default function App() {
               href="https://github.com/minithiago"
               target="_blank"
               rel="noreferrer"
-              className="p-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-full text-slate-400 hover:text-slate-100 transition-colors"
+              className="p-2 bg-theme-card-alt hover:bg-theme-card-dark border border-theme rounded-full text-theme-secondary hover:text-theme-primary transition-colors"
               title="GitHub Profile"
             >
               <Github size={13} />
@@ -165,7 +202,7 @@ export default function App() {
               href="https://www.linkedin.com/in/ivan-naranjo-14049230a/"
               target="_blank"
               rel="noreferrer"
-              className="p-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-full text-slate-400 hover:text-slate-100 transition-colors"
+              className="p-2 bg-theme-card-alt hover:bg-theme-card-dark border border-theme rounded-full text-theme-secondary hover:text-theme-primary transition-colors"
               title="LinkedIn Profile"
             >
               <Linkedin size={13} />
@@ -177,7 +214,7 @@ export default function App() {
                 playClick();
                 setMobileMenuOpen(!mobileMenuOpen);
               }}
-              className="md:hidden p-2 bg-white/5 border border-white/10 text-slate-300 rounded-lg"
+              className="md:hidden p-2 bg-theme-card-alt border border-theme text-theme-secondary hover:text-theme-primary rounded-lg"
             >
               {mobileMenuOpen ? <X size={14} /> : <Menu size={14} />}
             </button>
@@ -187,7 +224,7 @@ export default function App() {
 
       {/* MOBILE NAVIGATION DROPDOWN */}
       {mobileMenuOpen && (
-        <div className="md:hidden absolute top-[135px] left-0 right-0 z-40 bg-[#080808]/95 border-b border-white/10 p-4 space-y-2 backdrop-blur-lg">
+        <div className="md:hidden absolute top-[135px] left-0 right-0 z-40 bg-theme-app/95 border-b border-theme p-4 space-y-2 backdrop-blur-lg">
           {menuItems.map((item) => {
             const isActive = activeSection === item.id;
             return (
@@ -196,8 +233,8 @@ export default function App() {
                 onClick={() => handleSectionChange(item.id)}
                 className={`w-full p-3 rounded-xl font-sans text-xs font-bold uppercase flex items-center space-x-3 cursor-pointer ${
                   isActive
-                    ? 'bg-white/5 border border-white/10 text-cyan-400'
-                    : 'text-slate-400 hover:text-slate-200 hover:bg-white/2'
+                    ? 'bg-theme-card-alt border border-theme text-cyan-400'
+                    : 'text-theme-secondary hover:text-theme-primary hover:bg-theme-card-alt'
                 }`}
               >
                 <span>{item.label}</span>
@@ -214,15 +251,15 @@ export default function App() {
         <section className="lg:col-span-4 lg:sticky lg:top-28 space-y-6 flex flex-col items-center">
           
           {/* Neon Display card detailing current focused system view */}
-          <div className="w-full bg-[#111] p-5 rounded-2xl border border-white/10 text-center space-y-3 shadow-2xl relative overflow-hidden">
+          <div className="w-full bg-theme-card p-5 rounded-2xl border border-theme text-center space-y-3 shadow-2xl relative overflow-hidden">
             <div className="absolute top-0 left-0 w-full h-0.5 bg-gradient-to-r from-cyan-500 to-fuchsia-500 opacity-60"></div>
-            <span className="inline-flex items-center px-3 py-1 rounded-full text-[9px] font-sans font-bold tracking-widest bg-white/5 text-cyan-400 border border-white/10 uppercase">
+            <span className="inline-flex items-center px-3 py-1 rounded-full text-[9px] font-sans font-bold tracking-widest bg-theme-card-alt text-cyan-400 border border-theme uppercase">
               Holograma de Control
             </span>
-            <h2 className="text-xl font-display uppercase tracking-tight text-slate-100">
+            <h2 className="text-xl font-display uppercase tracking-tight text-theme-primary">
               Consola del Portfolio
             </h2>
-            <p className="text-xs text-white/60 max-w-xs mx-auto leading-relaxed">
+            <p className="text-xs text-theme-secondary max-w-xs mx-auto leading-relaxed">
               Gira el cubo 3D o usa el menú de navegación superior para teletransportarte instantáneamente entre secciones.
             </p>
           </div>
@@ -231,7 +268,7 @@ export default function App() {
           <HoloCube activeSection={activeSection} onSectionChange={handleSectionChange} />
 
           {/* Contact quick transceiver status */}
-          <div className="w-full bg-[#111] border border-white/10 rounded-2xl p-4 flex items-center justify-between text-xs text-white/50">
+          <div className="w-full bg-theme-card border border-theme rounded-2xl p-4 flex items-center justify-between text-xs text-theme-secondary">
             <div className="flex items-center space-x-2">
               <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
               <span>Canal Directo: ACTIVO</span>
@@ -247,118 +284,128 @@ export default function App() {
         </section>
 
         {/* RIGHT COLUMN: The Dynamic Interactive Displays (Main content panel) */}
-        <section id="main-content-display" className="lg:col-span-8 min-h-[520px] w-full bg-[#111] rounded-2xl border border-white/20 shadow-[40px_60px_100px_rgba(0,0,0,0.5)] p-6 md:p-8 relative overflow-hidden">
+        <section id="main-content-display" className="lg:col-span-8 min-h-[520px] w-full bg-theme-card rounded-2xl border border-theme-strong shadow-2xl p-6 md:p-8 relative overflow-hidden">
           
           {/* Rainbow header top border like Marcus Klein design */}
           <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-cyan-500 via-fuchsia-500 to-orange-500"></div>
 
-          {/* SECTION 1: INICIO (HERO SCREEN) */}
-          {activeSection === 'inicio' && (
-            <div className="space-y-8">
-              <div className="space-y-4 pt-4">
-                <div className="flex items-center space-x-2 text-cyan-400">
-                  <Sparkles size={14} />
-                  <span className="text-[10px] tracking-[0.3em] uppercase font-semibold">DESARROLLADOR DE APLICACIONES</span>
-                </div>
-                
-                <h2 className="text-4xl md:text-6xl font-display uppercase leading-none tracking-tight">
-                  FULL-STACK DEVELOPER
-                </h2>
+          {/* Smooth fade-in container triggered on activeSection change */}
+          <div key={activeSection} className="animate-fade-in w-full">
+            {/* SECTION 1: INICIO (HERO SCREEN) */}
+            {activeSection === 'inicio' && (
+              <div className="space-y-8">
+                <div className="space-y-4 pt-4">
+                  <div className="flex items-center space-x-2 text-cyan-400">
+                    <Sparkles size={14} />
+                    <span className="text-[10px] tracking-[0.3em] uppercase font-semibold">DESARROLLADOR DE APLICACIONES</span>
+                  </div>
+                  
+                  <h2 className="text-4xl md:text-6xl font-display uppercase leading-none tracking-tight">
+                    FULL-STACK DEVELOPER
+                  </h2>
 
-                <p className="text-sm md:text-base text-white/60 leading-relaxed max-w-xl">
-                  Hola, soy Iván, desarrollador especializado en el desarrollo de aplicaciones móviles nativas, de escritorio y sitios web . Explora mis proyectos y ponte en contacto conmigo.
-                </p>
-              </div>
-
-              {/* Call to actions */}
-              <div className="flex flex-wrap gap-4 pt-2">
-                <button
-                  onClick={() => handleSectionChange('proyectos')}
-                  className="px-6 py-3 bg-white text-black font-display text-sm tracking-wider hover:bg-cyan-400 transition-colors uppercase cursor-pointer"
-                >
-                  VER PROYECTOS
-                </button>
-                <button
-                  onClick={() => handleSectionChange('contacto')}
-                  className="px-6 py-3 border border-white/20 font-display text-sm tracking-wider uppercase hover:bg-white/10 transition-colors cursor-pointer"
-                >
-                  ENVIAR MENSAJE
-                </button>
-              </div>
-
-              {/* Bento Quick Intro Specs */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-8 border-t border-white/10">
-                <div className="p-6 bg-white/5 rounded-xl border border-white/5">
-                  <h4 className="text-[10px] tracking-widest text-cyan-400 uppercase font-semibold">100% SIN PLANTILLAS</h4>
-                  <p className="text-xs text-white/50 mt-2 leading-relaxed">
-                    Cada componente está hecho a medida con código limpio, TypeScript estricto y animaciones optimizadas para una fluidez absoluta.
+                  <p className="text-sm md:text-base text-theme-secondary leading-relaxed max-w-xl">
+                    Hola, soy Iván, desarrollador especializado en el desarrollo de aplicaciones móviles nativas, de escritorio y sitios web . Explora mis proyectos y ponte en contacto conmigo.
                   </p>
                 </div>
-                <div className="p-6 bg-white/5 rounded-xl border border-white/5">
-                  <h4 className="text-[10px] tracking-widest text-fuchsia-400 uppercase font-semibold">INTERACTIVIDAD TOTAL</h4>
-                  <p className="text-xs text-white/50 mt-2 leading-relaxed">
-                    Sáltate las capturas estáticas. Interactúa directamente con mis proyectos ejecutando simuladores interactivos integrados en tiempo real.
-                  </p>
+
+                {/* Call to actions */}
+                <div className="flex flex-wrap gap-4 pt-2">
+                  <button
+                    onClick={() => handleSectionChange('proyectos')}
+                    className="px-6 py-3 bg-theme-primary text-theme-app font-display text-sm tracking-wider hover:bg-cyan-400 hover:text-black hover:border-cyan-400 border border-transparent transition-all uppercase cursor-pointer"
+                  >
+                    VER PROYECTOS
+                  </button>
+                  <button
+                    onClick={() => handleSectionChange('contacto')}
+                    className="px-6 py-3 border border-theme-strong text-theme-primary bg-theme-card-alt font-display text-sm tracking-wider uppercase hover:bg-theme-card-dark transition-colors cursor-pointer"
+                  >
+                    ENVIAR MENSAJE
+                  </button>
+                </div>
+
+                {/* Bento Quick Intro Specs */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-8 border-t border-theme">
+                  <div className="p-6 bg-theme-card-alt rounded-xl border border-theme flex flex-col justify-center min-h-[110px]">
+                    <h4 className="text-[10px] tracking-widest text-cyan-400 uppercase font-semibold">DISPONIBILIDAD / ESTADO ACTUAL</h4>
+                    <div className="flex items-center space-x-2.5 mt-3">
+                      <span className="relative flex h-2.5 w-2.5">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                        <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500"></span>
+                      </span>
+                      <span className="text-sm font-semibold text-theme-primary">Disponible para proyectos</span>
+                    </div>
+                  </div>
+                  <div className="p-6 bg-theme-card-alt rounded-xl border border-theme flex flex-col justify-center min-h-[110px]">
+                    <h4 className="text-[10px] tracking-widest text-fuchsia-400 uppercase font-semibold">ÚLTIMA ACTUALIZACIÓN DEL PORTFOLIO</h4>
+                    <p className="text-xs text-theme-secondary mt-2 leading-relaxed font-medium">
+                      Última actualización: 30 de junio de 2026
+                    </p>
+                    <span className="text-[10px] font-mono text-fuchsia-400/80 block mt-1">
+                      Versión 1.0
+                    </span>
+                  </div>
                 </div>
               </div>
-            </div>
-          )}
+            )}
 
-          {/* SECTION 2: PROYECTOS (PROJECTS SHOWCASE) */}
-          {activeSection === 'proyectos' && (
-            <div className="space-y-6">
-              <div className="space-y-2 pt-4">
-                <span className="text-[10px] tracking-[0.3em] text-cyan-400 font-semibold uppercase block">Consola de Desarrollo</span>
-                <h2 className="text-4xl font-display uppercase tracking-tight leading-none">Laboratorio de Proyectos</h2>
-                <p className="text-xs text-white/50 leading-relaxed max-w-2xl">
-                  Selecciona uno de los siguientes proyectos para abrir su spec técnica y activar su simulador interactivo de alta fidelidad directamente en la pantalla de la derecha.
-                </p>
+            {/* SECTION 2: PROYECTOS (PROJECTS SHOWCASE) */}
+            {activeSection === 'proyectos' && (
+              <div className="space-y-6">
+                <div className="space-y-2 pt-4">
+                  <span className="text-[10px] tracking-[0.3em] text-cyan-400 font-semibold uppercase block">Consola de Desarrollo</span>
+                  <h2 className="text-4xl font-display uppercase tracking-tight leading-none">Laboratorio de Proyectos</h2>
+                  <p className="text-xs text-theme-secondary leading-relaxed max-w-2xl">
+                    Selecciona uno de los siguientes proyectos para abrir su spec técnica y activar su simulador interactivo de alta fidelidad directamente en la pantalla de la derecha.
+                  </p>
+                </div>
+                <ProjectsSection />
               </div>
-              <ProjectsSection />
-            </div>
-          )}
+            )}
 
-          {/* SECTION 3: HABILIDADES (SKILLS CORE) */}
-          {activeSection === 'habilidades' && (
-            <div className="space-y-6">
-              <div className="space-y-2 pt-4">
-                <span className="text-[10px] tracking-[0.3em] text-orange-400 font-semibold uppercase block">Arsenal de Ingeniería</span>
-                <h2 className="text-4xl font-display uppercase tracking-tight leading-none">Tecnologías Soportadas</h2>
-                <p className="text-xs text-white/50 leading-relaxed max-w-2xl">
-                  Mi pila tecnológica principal enfocada en la robustez estructural, modularidad tipada y optimización del cliente en entornos de alto rendimiento.
-                </p>
+            {/* SECTION 3: HABILIDADES (SKILLS CORE) */}
+            {activeSection === 'habilidades' && (
+              <div className="space-y-6">
+                <div className="space-y-2 pt-4">
+                  <span className="text-[10px] tracking-[0.3em] text-orange-400 font-semibold uppercase block">Arsenal Tecnológico</span>
+                  <h2 className="text-4xl font-display uppercase tracking-tight leading-none">Tecnologías Aprendidas</h2>
+                  <p className="text-xs text-theme-secondary leading-relaxed max-w-2xl">
+                    Mi pila tecnológica principal enfocada en la robustez estructural, modularidad tipada y optimización del cliente en entornos de alto rendimiento.
+                  </p>
+                </div>
+                <SkillsCore />
               </div>
-              <SkillsCore />
-            </div>
-          )}
+            )}
 
-          {/* SECTION 4: STATS / SOBRE MÍ (BENTO GRID) */}
-          {activeSection === 'stats' && (
-            <div className="space-y-6">
-              <div className="space-y-2 pt-4">
-                <span className="text-[10px] tracking-[0.3em] text-cyan-400 font-semibold uppercase block">Especificaciones Personales</span>
-                <h2 className="text-4xl font-display uppercase tracking-tight leading-none">Sobre Mí & Telemetría</h2>
-                <p className="text-xs text-white/50 leading-relaxed max-w-2xl">
-                  Una vista general interactiva de mis logros, nivel de actividad en compilación de código, ubicación y enfoque de ingeniería de producción.
-                </p>
+            {/* SECTION 4: STATS / SOBRE MÍ (BENTO GRID) */}
+            {activeSection === 'stats' && (
+              <div className="space-y-6">
+                <div className="space-y-2 pt-4">
+                  <span className="text-[10px] tracking-[0.3em] text-cyan-400 font-semibold uppercase block">Especificaciones Personales</span>
+                  <h2 className="text-4xl font-display uppercase tracking-tight leading-none">Sobre Mí </h2>
+                  <p className="text-xs text-theme-secondary leading-relaxed max-w-2xl">
+                    Una vista general interactiva de mis logros, mi trayectoria y mis objetivos.
+                  </p>
+                </div>
+                <BentoStats />
               </div>
-              <BentoStats />
-            </div>
-          )}
+            )}
 
-          {/* SECTION 5: CONTACTO (TERMINAL TRANSCEIVER) */}
-          {activeSection === 'contacto' && (
-            <div className="space-y-6">
-              <div className="space-y-2 pt-4">
-                <span className="text-[10px] tracking-[0.3em] text-fuchsia-400 font-semibold uppercase block">Transceptor Sub-Espacial</span>
-                <h2 className="text-4xl font-display uppercase tracking-tight leading-none">Despachar Transmisión</h2>
-                <p className="text-xs text-white/50 leading-relaxed max-w-xl">
-                  Envía un correo seguro de forma cifrada a través de esta terminal de comandos simulada. Escribe tu nombre, email, asunto y mensaje, luego despáchalo.
-                </p>
+            {/* SECTION 5: CONTACTO (TERMINAL TRANSCEIVER) */}
+            {activeSection === 'contacto' && (
+              <div className="space-y-6">
+                <div className="space-y-2 pt-4">
+                  <span className="text-[10px] tracking-[0.3em] text-fuchsia-400 font-semibold uppercase block">Transceptor Sub-Espacial</span>
+                  <h2 className="text-4xl font-display uppercase tracking-tight leading-none">Enviar Transmisión</h2>
+                  <p className="text-xs text-theme-secondary leading-relaxed max-w-xl">
+                    Envía un correo seguro de forma cifrada a través de esta terminal de comandos simulada. Escribe tu nombre, email, asunto y mensaje, luego despáchalo.
+                  </p>
+                </div>
+                <TerminalContact />
               </div>
-              <TerminalContact />
-            </div>
-          )}
+            )}
+          </div>
 
           {/* Decorative glowing sphere in background like the theme */}
           <div className="absolute -bottom-20 -right-20 w-80 h-80 bg-cyan-500/5 blur-[100px] rounded-full pointer-events-none"></div>
@@ -367,24 +414,15 @@ export default function App() {
       </main>
 
       {/* FOOTER METADATA BAR */}
-      <footer className="bg-[#080808] border-t border-white/10 py-8 px-6 relative z-10">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6 text-xs text-white/40">
-          
-          <div className="flex items-center space-x-2">
-            <TerminalIcon size={12} className="text-cyan-400" />
-            <span>Código 100% puro escrito sin constructores visuales estáticos.</span>
-          </div>
+      <footer className="bg-theme-app border-t border-theme py-8 px-6 relative z-10">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-center gap-6 text-xs text-theme-muted">
 
           <div className="flex items-center space-x-1">
             <span>© {new Date().getFullYear()} Iván</span>
             <span>▪</span>
-            <span className="text-white/60">Hecho con React, TypeScript y Tailwind v4</span>
+            <span className="text-theme-secondary">Hecho con React, TypeScript y Tailwind v4</span>
           </div>
 
-          <div className="flex items-center space-x-2 text-[10px]">
-            <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-ping"></span>
-            <span className="text-cyan-400 uppercase font-semibold">Despliegue Órbita Activo</span>
-          </div>
         </div>
       </footer>
     </div>

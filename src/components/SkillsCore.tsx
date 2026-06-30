@@ -227,18 +227,6 @@ export const SkillsCore: React.FC = () => {
             );
           })}
         </div>
-
-        {/* Practical Experience Bento Grid banner */}
-        <div className="p-6 rounded-xl bg-gradient-to-r from-[#151515] to-[#0d0d0d] border border-white/10 relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-24 h-24 bg-cyan-500/5 rounded-full blur-2xl"></div>
-          <div className="flex items-center space-x-3 mb-2">
-            <Sparkles className="text-cyan-400" size={16} />
-            <h4 className="font-sans text-xs font-bold text-slate-200 uppercase tracking-widest">Enfoque de Ingeniería</h4>
-          </div>
-          <p className="text-xs text-white/50 leading-relaxed">
-            No utilizo plantillas. Escribo código limpio, robusto y modular. Priorizo la accesibilidad, diseño UX centrado en la velocidad de renderizado, y arquitecturas acopladas mediante TypeScript estricto.
-          </p>
-        </div>
       </div>
     </div>
   );

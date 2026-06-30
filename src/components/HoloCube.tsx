@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Home, Code, Cpu, MessageSquare, Award, RotateCw, GripHorizontal } from 'lucide-react';
+import { Home, Code, Cpu, MessageSquare, Award, RotateCw, GripHorizontal, Smile } from 'lucide-react';
 import { playClick, playSwoosh } from './AudioSynth';
 
 interface HoloCubeProps {
@@ -207,18 +207,22 @@ export const HoloCube: React.FC<HoloCubeProps> = ({ activeSection, onSectionChan
             <span className="text-[9px] font-mono opacity-40 mt-1 uppercase">Showcase</span>
           </div>
 
-          {/* FACE 3: BACK (Alternativo / Stats duplicated or customized) */}
+          {/* FACE 3: BACK (Easter Egg - Rickroll) */}
           <div
-            onClick={(e) => handleFaceClick('inicio', e)}
+            onClick={(e) => {
+              e.stopPropagation();
+              const win = window.open('https://www.youtube.com/watch?v=dQw4w9WgXcQ', 'EasterEgg');
+              if (win) win.document.title = 'Easter Egg';
+            }}
             style={{
               transform: 'rotateY(180deg) translateZ(72px)',
               backfaceVisibility: 'hidden',
             }}
             className="absolute inset-0 bg-[#111]/90 border-2 border-white/10 rounded-xl flex flex-col justify-center items-center text-center p-3 backdrop-blur-sm hover:border-white/25 text-white/40"
           >
-            <RotateCw size={24} className="opacity-30 text-white/50" />
-            <span className="text-[10px] font-sans tracking-wider mt-2">ROTAR</span>
-            <span className="text-[8px] font-mono opacity-30 mt-1 uppercase">Girar Cubo</span>
+            <Smile size={24} className="opacity-30 text-white/50" />
+            <span className="text-[10px] font-sans tracking-wider mt-2">?????</span>
+            <span className="text-[8px] font-mono opacity-30 mt-1 uppercase">Easter Egg</span>
           </div>
 
           {/* FACE 4: LEFT (Habilidades) */}

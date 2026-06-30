@@ -4,9 +4,9 @@ import { Project } from '../types';
 import { playClick } from './AudioSynth';
 
 // Import generated mockup images
-import gameGuessDuelImg from '../assets/images/gameguessduel.png';
+import gameGuessDuelImg from '../assets/images/game.jpeg';
 import opp72Img from '../assets/images/opp72.png';
-import gameHubImg from '../assets/images/gamehub.png';
+import gameHubImg from '../assets/images/gameh.png';
 import lumina3dImg from '../assets/images/lumina.png';
 import gestioImg from '../assets/images/gestio.jpeg';
 
